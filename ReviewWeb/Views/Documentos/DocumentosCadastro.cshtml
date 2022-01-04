@@ -1,0 +1,62 @@
+﻿@model Modelo.ModeloDocumentos
+@using System.Data;
+
+@{
+    ViewBag.Title = "Cadastro de Documento";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+@using (Html.BeginForm("DocumentosCadastro", "Documentos", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Inserir Documento</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdDocumentos)
+            @Html.HiddenFor(model => Model.IdEmpresas)
+            <div class="row">
+                <div class="col-md-9">
+                    @Html.LabelFor(model => model.Titulo, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Titulo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Titulo, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Dt_Vencimento, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Dt_Vencimento, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Dt_Vencimento, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.Descricao, 5, 100, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdDocumentos > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Documentos",new { id = @Model.IdDocumentos })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("DocumentosList","Documentos")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

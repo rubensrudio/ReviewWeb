@@ -1,0 +1,52 @@
+﻿@using System.Data;
+
+@{
+    ViewBag.Title = "Alocação de Funcionários";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+@model System.Data.DataTable
+
+<div class="well">
+    <div class="form-horizontal">
+        <h4>Alocação de Funcionários</h4>
+        <hr />
+
+        @using (Ajax.BeginForm("AlocacaoCadastro", "AlocacaoFuncionarios", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-3">
+                    Data Início: <input type="text" name="inicio" id="inicio" size="10" class="form-control" value="@ViewBag.Dt_Inicio" />
+                </div>
+                <div class="col-md-3">
+                    Data Fim: <input type="text" name="fim" id="fim" size="10" class="form-control" value="@ViewBag.Dt_Fim" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    Contrato:
+                    <select name="Contratos" id="Contratos" class="form-control">
+                        <option value="">- Selecione o Contrato -</option>
+                        @foreach (DataRow row in ViewBag.Contratos)
+                        {
+                            <option value="@row["idcontratos"]">@row["nome_fantasia"] - @row["contrato"] - @row["descricao"]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <button name="submitButton" value="Pesquisar" title="Pesquisar" class="btn btn-sm btn-outline-secondary" type="submit"><img src="../Images/svg/si-glyph-magnifier.svg" style="width:16px;height:16px" /> Pesquisar</button>
+        }
+    </div>
+    <br />
+    @Html.Partial("_AlocacaoCadastro", Model)
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}
+

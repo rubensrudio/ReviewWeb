@@ -1,0 +1,27 @@
+﻿@model System.Data.DataTable
+@using System.Data;
+
+<div id="divLista">
+    <table id="mytable" class="table table-bordered table-striped" style="border:solid 1px">
+        <tr>
+            <th>Funcionário</th>
+            @{ int i = 0; }
+            @foreach (DataRow row in ViewBag.Datas)
+            {
+                <th>@row["data"]</th>
+                i = i + 1;
+            }
+        </tr>
+
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                <td>@row["nome"] @row["sobrenome"]</td>
+                @for (int j = 0; j < i; j++)
+                {
+                    <td></td>
+                }
+            </tr>
+        }
+    </table>
+</div>

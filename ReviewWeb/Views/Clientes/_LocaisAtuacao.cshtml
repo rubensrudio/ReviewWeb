@@ -1,0 +1,78 @@
+﻿@using System.Data;
+
+
+<div id="divLista">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <span class="control-label">Local de Atuação: </span>
+                    <input type="text" name="local_cidade" id="local_cidade" class="form-control" />
+                </div>
+                
+                <div class="col-md-2">
+                    <br />
+                    <select id="local_uf" name="local_uf" class="form-control input-group-sm">
+                        <option value="AC">AC</option>
+                        <option value="AL">AL</option>
+                        <option value="AM">AM</option>
+                        <option value="AP">AP</option>
+                        <option value="BA">BA</option>
+                        <option value="CE">CE</option>
+                        <option value="DF">DF</option>
+                        <option value="ES">ES</option>
+                        <option value="GO">GO</option>
+                        <option value="MA">MA</option>
+                        <option value="MG">MG</option>
+                        <option value="MS">MS</option>
+                        <option value="MT">MT</option>
+                        <option value="PA">PA</option>
+                        <option value="PB">PB</option>
+                        <option value="PE">PE</option>
+                        <option value="PI">PI</option>
+                        <option value="PR">PR</option>
+                        <option value="RJ">RJ</option>
+                        <option value="RN">RN</option>
+                        <option value="RO">RO</option>
+                        <option value="RR">RR</option>
+                        <option value="RS">RS</option>
+                        <option value="SC">SC</option>
+                        <option value="SE">SE</option>
+                        <option value="SP">SP</option>
+                        <option value="TO">TO</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <br />
+                    
+                    @Ajax.ActionLink("Inserir", "LocaisAtuacaoInserir", new { idclientes = ViewBag.idclientes }, new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick= "href+='&cidade='+ document.getElementById('local_cidade').value + '&uf='+ document.getElementById('local_uf').value;",  @class = "btn btn-secondary btn-sm" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <table id="mytable" class="table table-bordered table-striped">
+        <tr>
+            <th>Código</th>
+            <th>Cidade</th>
+            <th>UF</th>
+            <th>Excluir</th>
+        </tr>
+        @foreach (DataRow row in ViewBag.Model2.Rows)
+        {
+            <tr>
+                <td style="text-align:center;width:60px">@row["idclientes_localidades"]</td>
+                <td>@row["cidade"]</td>
+                <td>@row["uf"]</td>
+                
+                <td style="width:60px">
+                    <div style="float:left;text-align:center;width:100%">
+                        <a class="btn btn-sm btn-outline-secondary" data-ajax="true" data-ajax-method="Get" data-ajax-mode="replace" data-ajax-update="#divLista" href="/Clientes/LocaisAtuacaoExcluir?idclientes_localidades=@row["idclientes_localidades"]&idclientes=@ViewBag.idclientes"><img src="../Images/svg/si-glyph-trash.svg" style="width:16px;height:16px" /></a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+

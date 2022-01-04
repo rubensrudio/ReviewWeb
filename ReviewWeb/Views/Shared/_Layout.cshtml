@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    <div>
+        <div class="div-top-pag">
+            @Html.Partial("../Home/Topo")
+        </div>
+        
+        <div class="row" style="min-height:300px">
+            <div class="col-md-2">
+                @if (Session["idusuarios"] != null)
+                {
+                    @Html.Action("Menu", "Home")
+                }
+                else
+                {
+                    @Html.Action("Menu2", "Home")
+                }
+            </div>
+            <div class="col-md-10">
+                @RenderBody()
+            </div>
+        </div>
+
+        <div class="card-footer">
+                @Html.Partial("../Home/Rodape")
+        </div>
+
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

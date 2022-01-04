@@ -1,0 +1,475 @@
+﻿@model System.Data.DataTable
+@using System.Data;
+
+@{
+    ViewBag.Title = "HorasContrato";
+}
+
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+        font-family:Arial;
+        
+    }
+
+        .table th,
+        .table td {
+            padding: 0.35rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .table .table {
+            background-color: #fff;
+        }
+
+    .table-sm th,
+    .table-sm td {
+        padding: 0.3rem;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered thead th,
+        .table-bordered thead td {
+            border-bottom-width: 2px;
+        }
+
+    .table-borderless th,
+    .table-borderless td,
+    .table-borderless thead th,
+    .table-borderless tbody + tbody {
+        border: 0;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+@foreach (DataRow row in ViewBag.UF)
+{
+    <div style="display:block; page-break-before:always;width:100%">
+        <center><h1>Relatório de Horas</h1></center>
+
+        <table style="width:100%">
+            <tr><td colspan="6" style="font-size:18pt" align="center"><b>@row["uf"]</b></td></tr>
+            @foreach (DataRow row2 in ViewBag.Clientes)
+            {
+                if (Convert.ToString(row2["uf"]) == Convert.ToString(row["uf"]))
+                {
+                    <tr><td colspan="6" style="font-size:16pt" align="center"><b>@row2["nome_fantasia"]</b></td></tr>
+
+                    <tr>
+                        <td colspan="6" style="font-size:16pt" align="center">
+
+                            @foreach (DataRow row3 in ViewBag.Contratos)
+                            {
+                                if (Convert.ToString(row3["idcontratos_clientes_localidades"]) == Convert.ToString(row2["idclientes_localidades"]))
+                                {
+                                    <table class="table table-striped" style="width:100%">
+                                        <tr><td colspan="6" style="font-size:12pt"><b>@row3["contrato"] - @row3["descricao"]</b></td></tr>
+
+                                        <tr>
+                                            <th width="250px" align="left">
+                                                Nome
+                                            </th>
+                                            <th width="430px" align="left">
+                                                Contrato
+                                            </th>
+                                            <th align="left">
+                                                Início
+                                            </th>
+                                            <th align="left">
+                                                Término
+                                            </th>
+                                            <th align="left">
+                                                Horas
+                                            </th>
+                                            <th align="left">
+                                                Valor
+                                            </th>
+                                        </tr>
+
+                                        @{
+                                            ViewBag.Contrato = (string)(row3["contrato"] + " - " + row3["descricao"]);
+                                            ViewBag.SubTotal = 0;
+                                            ViewBag.Total = 0;
+                                            ViewBag.SubTotal_Valor = 0;
+                                        }
+                                        @foreach (DataRow item in Model.Rows)
+                                        {
+                                            ViewBag.ItemContrato = (item["contrato"] == null) ? String.Empty : item["contrato"].ToString();
+                                            ViewBag.ItemUF = (item["aloc_uf"] == null) ? String.Empty : item["aloc_uf"].ToString();
+                                            ViewBag.ItemCliente = (item["aloc_cliente"] == null) ? String.Empty : item["aloc_cliente"].ToString();
+
+                                            if (ViewBag.ItemContrato == (string)ViewBag.Contrato)
+                                            {
+
+                                                if ((string)ViewBag.Contrato == "")
+                                                {
+                                                    ViewBag.Contrato = item["contrato"];
+                                                }
+
+                                                ViewBag.SubTotal = Convert.ToDouble(item["horas"]) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(item["valor"]) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(item["horas"]) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        @item["contrato"]
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @item["horas"]
+                                                    </td>
+                                                    <td>
+                                                        R$ @item["valor"]
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == String.Empty) && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - SPEED
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == "AD") && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - Administrativo
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == "OR") && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - Orçamento
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == "AF") && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - Afastamento / Doença
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == "AV") && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(ViewBag.Total_Contratos)), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - Aviso Prévio / Demissão
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (Convert.ToInt32(ViewBag.ItemCliente) == 0) && (ViewBag.ItemUF == Convert.ToString(row["uf"])) && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no UF
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(@row["quant_contratos"])), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(@row["quant_contratos"])), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - @row["uf"]
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else if ((ViewBag.ItemContrato == String.Empty) && (ViewBag.ItemCliente == Convert.ToString(row2["idclientes"])) && (ViewBag.ItemUF == Convert.ToString(row["uf"])) && (Convert.ToInt32(ViewBag.Rateio) == 1))
+                                            {
+                                                //Se não tá no contrato mas está no Cliente
+                                                ViewBag.ItemHoras = Math.Round((Convert.ToDouble(item["horas"]) / Convert.ToDouble(@row2["quant_contratos"])), 2);
+                                                ViewBag.ItemValor = Math.Round((Convert.ToDouble(item["valor"]) / Convert.ToDouble(@row2["quant_contratos"])), 2);
+                                                ViewBag.SubTotal = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.SubTotal);
+                                                ViewBag.SubTotal_Valor = Convert.ToDouble(ViewBag.ItemValor) + Convert.ToDouble(ViewBag.SubTotal_Valor);
+                                                ViewBag.Total = Convert.ToDouble(ViewBag.ItemHoras) + Convert.ToDouble(ViewBag.Total);
+
+                                                <tr>
+                                                    <td>
+                                                        @item["nome"]
+                                                    </td>
+                                                    <td>
+                                                        Rateio - @row2["nome_fantasia"]
+                                                    </td>
+                                                    <td>
+                                                        @item["inicio"]
+                                                    </td>
+                                                    <td>
+                                                        @item["termino"]
+                                                    </td>
+                                                    <td>
+                                                        @ViewBag.ItemHoras
+                                                    </td>
+                                                    <td>
+                                                        R$ @ViewBag.ItemValor
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        }
+
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <b>SubTotal:</b>
+                                            </td>
+                                            <td>
+                                                <b>@ViewBag.SubTotal</b>
+                                            </td>
+                                            <td>
+                                                <b>R$ @ViewBag.SubTotal_Valor</b>
+                                            </td>
+                                        </tr>
+
+                                        @{
+                                            ViewBag.SubTotal = 0;
+                                            ViewBag.SubTotal_Valor = 0;
+                                        }
+
+
+                                    </table>
+
+                                    <div style="width:70%; text-align:center">
+                                        <table class="table table-striped">
+                                            <tr><td colspan="5" style="font-size:12pt"><b>Horas Extras</b></td></tr>
+
+                                            <tr>
+                                                <th align="left">
+                                                    Data
+                                                </th>
+                                                <th width="250px" align="left">
+                                                    Nome
+                                                </th>
+                                                <th align="left">
+                                                    Tipo
+                                                </th>
+                                                <th align="left">
+                                                    Horas
+                                                </th>
+                                                <th align="left">
+                                                    Valor
+                                                </th>
+                                            </tr>
+
+                                            @{ 
+                                                ViewBag.HEHoras = 0;
+                                                ViewBag.HEValor = 0;
+                                            }
+
+                                            @foreach (DataRow row4 in ViewBag.HorasExtras)
+                                            {
+                                                if (Convert.ToString(row4["idcontratos"]) == Convert.ToString(row3["idcontratos"]))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @row4["nome"]
+                                                        </td>
+                                                        <td>
+                                                            @row4["dt_prog"]
+                                                        </td>
+                                                        <td>
+                                                            @row4["tipo"]
+                                                        </td>
+                                                        <td>
+                                                            @row4["horas"]
+                                                        </td>
+                                                        <td>
+                                                            R$ @row4["valor"]
+                                                        </td>
+                                                    </tr>
+                                                    ViewBag.HEHoras = ViewBag.HEHoras + Convert.ToDouble(row4["horas"]);
+                                                    ViewBag.HEValor = ViewBag.HEValor + Convert.ToDouble(row4["valor"]);
+                                                }
+                                            }
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <b>SubTotal Horas Extras:</b>
+                                                </td>
+                                                <td>
+                                                    <b>@ViewBag.HEHoras</b>
+                                                </td>
+                                                <td>
+                                                    <b>R$ @ViewBag.HEValor</b>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div>&nbsp;</div>
+                                    <div>&nbsp;</div>
+
+                                                }
+                                            }
+
+                        </td>
+                    </tr>
+                                                }
+                                            }
+        </table>
+    </div>
+                                            }

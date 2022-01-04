@@ -1,0 +1,96 @@
+﻿@model System.Data.DataTable
+@using System.Data
+@{
+    ViewBag.Title = "HistogramaList";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<script>
+    $(document).ready(function(){
+        $("#imprimir").click(function(event){
+            event.preventDefault();
+            window.open("@Url.Action("Histograma", "Relatorios")" + "?tipo=1&mes=" + $("#mes").val() + "&ano=" + $("#ano").val() + "&IdContratos=" + $("#IdContratos").val());
+        });
+
+        $("#imprimir_tela").click(function(event){
+            event.preventDefault();
+            $.ajax({
+                //base address/controller/Action
+                url: "@Url.Action("Histograma", "Relatorios")",
+                type: 'GET',
+                dataType: 'html',
+                data: {
+                    //Passing Input parameter
+                    "tipo": 2,
+                    "mes": $("#mes").val(),
+                    "ano": $("#ano").val(),
+                    "IdContratos": $("#IdContratos").val()
+                },
+                success: function (result) {
+                    alert(result);
+                    $(".well").html(result);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            return false;
+        });
+    })
+</script>
+
+<div class="well">
+    <div class="panel-heading">
+
+    </div>
+    <div class="form-horizontal">
+        <h4>Relatório de Histograma</h4>
+        <hr />
+        <form method="post" action="/Relatorios/Histograma" id="frmVenda" class="form-horizontal">
+            <div class="form-group">
+                <label for="IdContratos" class="col-sm-2 control-label">Contrato:</label>
+                <div class="col-sm-6">
+                    <select name="IdContratos" id="IdContratos" class="form-control">
+                        <option value="">-- Todos --</option>
+                        @foreach (DataRow row in ViewBag.Contratos)
+                        {
+                            <option value="@row["idcontratos"]">@row["contrato"] - @row["descricao"]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ano" class="col-sm-2 control-label">Ano:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="ano" name="ano" value="@ViewBag.Ano" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="mes" class="col-sm-2 control-label">Mês:</label>
+                <div class="col-sm-4">
+                    <select name="mes" id="mes" class="form-control" required>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button title="Imprimir em Tela" id="imprimir_tela" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-print.svg" style="width:32px;height:32px" /><br />Imprimir em Tela</button>
+                    <a title="Imprimir" target="_blank" href="#" id="imprimir" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-print.svg" style="width:32px;height:32px" /><br />Gerar PDF</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,1042 @@
+﻿@using System.Data;
+
+@{
+    ViewBag.Title = "Alocação de Funcionários";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<link href="~/Content/jstree.css" rel="stylesheet" />
+
+<script>
+    function MensagemAlocacao2(parent, idfuncionario, situacao, datahora, observacao) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Salvar", "AlocacaoFuncionarios")",
+
+            data: { "id": parent, "idfuncionarios": idfuncionario, "situacao": situacao, "datahora": datahora, "observacao": observacao },
+            async: false,
+            success: function (data) {
+                if (data != "") {
+                    Mensagem('Atenção', data);
+                }
+                window.location.href = '@Url.Action("AlocacaoFuncionariosList", "AlocacaoFuncionarios")';
+            },
+            dataType: 'html',
+            error: function (data) {
+                alert('Erro ao salvar!');
+            }
+        });
+    }
+</script>
+
+<div class="well">
+    <div class="row">
+        <div class="col-md-5">
+            <div id="jstree">
+                <!-- in this example the tree is populated from inline HTML -->
+                <ul>
+                    <li id="SPEED" data-jstree='{"opened":true, "type":"root"}'>
+                        SPEED
+                        <ul>
+                            @foreach (DataRow row in ViewBag.UF)
+                            {
+                                if (((Convert.ToString(row["perm"]) == "1") && (Convert.ToInt32(ViewBag.Todos) == 0)) || (Convert.ToInt32(ViewBag.Todos) == 1) || (Convert.ToInt32(ViewBag.Visualizacao) == 1))
+                                {
+                                    <li id="@row["uf"]" data-jstree='{"opened":true, "type":"local"}'>
+                                        @row["uf"]
+                                        <ul>
+                                            @foreach (DataRow row2 in ViewBag.Clientes)
+                                            {
+                                                if (Convert.ToString(row2["uf"]) == Convert.ToString(row["uf"]))
+                                                {
+                                                    <li id="@row["uf"]_@row2["idclientes"]" data-jstree='{"opened":true, "type":"empresa"}'>
+                                                        @row2["nome_fantasia"]
+                                                        <ul>
+                                                            @foreach (DataRow row3 in ViewBag.Contratos)
+                                                            {
+                                                                if (Convert.ToString(row3["idcontratos_clientes_localidades"]) == Convert.ToString(row2["idclientes_localidades"]))
+                                                                {
+                                                                    <li id="@row["uf"]_@row2["idclientes"]_@row3["idcontratos"]" data-jstree='{"opened":true, "type":"pc"}'>
+                                                                        @if (row3["dt_termino"].ToString() != "")
+                                                                        {
+                                                                            if (Convert.ToDateTime(row3["dt_termino"]).AddDays(-10) < DateTime.Now)
+                                                                            {
+                                                                                <span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row3["contrato"] - @row3["descricao"]</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span> @row3["contrato"] - @row3["descricao"]</span>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span> @row3["contrato"] - @row3["descricao"]</span>
+                                                                        }
+                                                                        <ul>
+                                                                            @foreach (DataRow row4 in ViewBag.Pessoas)
+                                                                            {
+                                                                                if (Convert.ToString(row4["aloc_uf"]) == Convert.ToString(row["uf"]))
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["aloc_cliente"]) == Convert.ToInt32(row2["idclientes"]))
+                                                                                    {
+                                                                                        if (Convert.ToInt32(row4["aloc_contrato"]) == Convert.ToInt32(row3["idcontratos"]))
+                                                                                        {
+                                                                                            if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                                                            {
+                                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">< img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                                                            {
+                                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">< img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        </ul>
+                                                                    </li>
+                                                                }
+                                                            }
+
+                                                            @foreach (DataRow row4 in ViewBag.Pessoas)
+                                                            {
+                                                                if (Convert.ToString(row4["aloc_uf"]) == Convert.ToString(row["uf"]))
+                                                                {
+                                                                    if (Convert.ToInt32(row4["aloc_cliente"]) == Convert.ToInt32(row2["idclientes"]))
+                                                                    {
+                                                                        if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                                        {
+                                                                            if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                                            {
+                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                                            {
+                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            }
+
+                                            @foreach (DataRow row4 in ViewBag.Pessoas)
+                                            {
+                                                if (Convert.ToString(row4["aloc_uf"]) == Convert.ToString(row["uf"]))
+                                                {
+                                                    if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                                    {
+                                                        if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                        {
+                                                            if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                            {
+                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+
+                                                            }
+                                                            else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                            {
+                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]  <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            }
+
+
+                            <li id="AD" data-jstree='{"opened":true, "type":"local"}'>
+                                Administrativo
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "AD")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            <li id="OR" data-jstree='{"opened":true, "type":"local"}'>
+                                Orçamento
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "OR")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            <li id="FO" data-jstree='{"opened":true, "type":"local"}'>
+                                Folga de Campo
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "FO")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            <li id="FE" data-jstree='{"opened":true, "type":"local"}'>
+                                Férias
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "FE")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            <li id="AF" data-jstree='{"opened":true, "type":"local"}'>
+                                Afastamento / Doença
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "AF")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            <li id="AV" data-jstree='{"opened":true, "type":"local"}'>
+                                Aviso Prévio / Demissão
+                                <ul>
+                                    @foreach (DataRow row4 in ViewBag.Pessoas)
+                                    {
+                                        if (Convert.ToString(row4["aloc_uf"]) == "AV")
+                                        {
+                                            if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                            {
+                                                if (Convert.ToInt32(row4["aloc_contrato"]) <= 0)
+                                                {
+                                                    if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"]</span></li>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+
+                            @* Na Raiz *@
+                            @foreach (DataRow row4 in ViewBag.Pessoas)
+                            {
+                                if (Convert.ToString(row4["aloc_uf"]) == "")
+                                {
+                                    if (Convert.ToInt32(row4["aloc_cliente"]) <= 0)
+                                    {
+                                        if ((Convert.ToInt32(row4["aloc_contrato"]) <= 0) && ((ViewBag.Todos == 1) || (Convert.ToInt32(ViewBag.Visualizacao) == 1)))
+                                        {
+                                            if (Convert.ToString(row4["situacao"]) == "Demissão")
+                                            {
+                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:red"> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                            }
+                                            else if (Convert.ToString(row4["situacao"]) == "Ocioso")
+                                            {
+                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#f5a337">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (Convert.ToInt32(row4["alerta_amarelo"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_amarelo.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else if (Convert.ToInt32(row4["alerta_vermelho"]) == 1)
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d"><img src="../Images/alerta_vermelho.png" /> @row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (Convert.ToInt32(row4["alerta_folga"]) == 1)
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] <img src="../Images/alerta_amarelo.png" /></span></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li id="@row4["idfuncionarios"]" class="li_func" data-jstree='{"type":"funcionarios"}'><span style="color:#4fb83d">@row4["nome"] @row4["sobrenome"] - @row4["quant_dias"] </span></li>
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </ul>
+                </ul>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-7">
+            @Html.Partial("_AlocacaoDados")
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jstree.js"></script>
+
+<script>
+    $(function () {
+        $("#div_dados").html("");
+        $('#jstree').jstree({
+            "core": {
+                "check_callback": function (operation, node, parent, position, more) {
+                    if (operation === "copy_node" || operation === "move_node") {
+                        if (parent.id === "#") {
+                            return false; // prevent moving a child above or below the root
+                        }
+                    }
+
+                    return true; // allow everything else
+                }
+            },
+            "types": {
+                "#": {
+                    "max_depth": 5,
+                    "valid_children": []
+                },
+                "root": {
+                    "icon": "../Images/t_root.png",
+                    "valid_children": ["funcionarios"]
+                },
+                "default": {
+                    "valid_children": []
+                },
+                "local": {
+                    "icon": "../Images/globo.png",
+                    "valid_children": ["funcionarios"]
+                },
+                "empresa": {
+                    "icon": "../Images/factory.png",
+                    "valid_children": ["funcionarios"]
+                },
+                "pc": {
+                    "icon": "../Images/t_leaf.png",
+                    "valid_children": ["funcionarios"]
+                },
+                "funcionarios": {
+                    "icon": "../Images/func.png",
+                    "valid_children": []
+                }
+            },
+            "plugins": ["dnd", "unique", "types"]
+        }).on('move_node.jstree', function (e, data2) {
+            var data = new Date();
+            var mes = data.getMonth() + 1;
+            var datahora = data.getDate() + '/' + mes + '/' + data.getFullYear() + ' ' + data.getHours() + ':' + data.getMinutes() + ':' + data.getSeconds();
+
+            MensagemAlocacao(data2.node.text, data2.node.parent, data2.node.id, datahora);
+
+        }).on('activate_node.jstree', function (e, data) {
+            if (data == undefined || data.node == undefined || data.node.id == undefined)
+                return;
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("AlocacaoDados", "AlocacaoFuncionarios")",
+
+                data: { "id": data.node.id },
+                async: false,
+                success: function (data) {
+                    $("#div_dados").html(data);
+                },
+                dataType: 'html',
+                error: function (data) {
+                    alert('Erro ao carregar dados!');
+                }
+            });
+        });
+    });
+
+
+</script>

@@ -1,0 +1,41 @@
+﻿
+<nav class="navbar navbar-dark bg-dark" style="padding:0px">
+    <div class="div-menu" id="navbar-collapse">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                @Html.ActionLink("Logoff", "Logoff","", new { @class = "nav-link" })
+            </li>
+            @if (Session["Modulos"] != null)
+            {
+                var list = (List<string>)Session["Modulos"];
+                for (int i = 0; i < list.Count; i++)
+                {
+                <li>
+                    <a href="#pageSubmenu_@i" data-toggle="collapse" aria-expanded="false" class="nav-link dropdown-toggle" style="padding-left:15px">@list[i].ToString()</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu_@i">
+                        @if (Session["ItemModulos"] != null)
+                        {
+                            var list2 = (List<string>)Session["ItemModulos"];
+                            for (int i2 = 0; i2 < list2.Count; i2++)
+                            {
+                                var item = list2[i2].ToString().Split('-');
+                                if (item[0].ToString() == list[i].ToString())
+                                {
+                                    <li class="nav-subitem">
+                                        @Html.ActionLink(item[1].ToString(),"../"+item[2].ToString()+ "/" + item[3].ToString(), "", new { @class = "nav-link"})
+                                        
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </li>
+                }
+            }
+            <li class="nav-item">
+                @Html.ActionLink("Sobre", "About", "", new { @class = "nav-link" })
+            </li>
+            
+        </ul>
+    </div>
+</nav> 

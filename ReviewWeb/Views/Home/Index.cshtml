@@ -1,0 +1,53 @@
+﻿@model Modelo.ModeloUsuario
+
+
+@using (Html.BeginForm("Index","Home", FormMethod.Post)) { 
+    @Html.ValidationSummary(true)
+    <fieldset>
+        @if (@ViewBag.Erro != null)
+        {
+            <div class="row">
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.Erro
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="well">
+
+                    <legend class="h4 mb-3 font-weight-normal">Login</legend>
+
+                    <div class="row" style="margin:5px">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Usuario)
+                        </div>
+                        <div class="input-group input-group-sm mb-3">
+                            @Html.TextBoxFor(model => model.Usuario, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin:5px">
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Senha)
+                        </div>
+                        <div class="input-group input-group-sm mb-3">
+                            @Html.PasswordFor(model => model.Senha, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Senha, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin:5px">
+                        <input class="btn btn-lg btn-secondary btn-block" style="width:150px" type="submit" value="Login" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-8"></div>
+        </div>
+</fieldset>
+}
+
+@Scripts.Render("~/bundles/jqueryval")

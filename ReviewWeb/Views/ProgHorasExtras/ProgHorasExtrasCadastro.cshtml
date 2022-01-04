@@ -1,0 +1,286 @@
+﻿@model Modelo.ModeloProgHorasExtras
+@using System.Data;
+
+@{
+    ViewBag.Title = "Programação de Horas Extras";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#Tipo").change(function () {
+            if ($(this).val() == "Sábado"){
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+                $("#Dia_Todo").val("");
+                $("#Dia_Todo").attr("disabled", false);
+
+                var url = "/ProgHorasExtras/FimdeSemana";
+                $.get(url, { dia: 6}, function (data) {
+                    $("#Dt_Prog").val(data);
+                });
+                $("#Dt_Prog").attr("disabled", true);
+            }
+            else if($(this).val() == "Domingo"){
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+                $("#Dia_Todo").val("");
+                $("#Dia_Todo").attr("disabled", false);
+
+                var url = "/ProgHorasExtras/FimdeSemana";
+                $.get(url, { dia: 0}, function (data) {
+                    $("#Dt_Prog").val(data);
+                });
+                $("#Dt_Prog").attr("disabled", true);
+            }
+            else if ($(this).val() == "Feriado") {
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+                $("#Dia_Todo").val("");
+                $("#Dia_Todo").attr("disabled", false);
+                $("#Dt_Prog").attr("disabled", false);
+            }
+            else if ($(this).val() == "Banco") {
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+                $("#Dia_Todo").val("");
+                $("#Dia_Todo").attr("disabled", false);
+                $("#Dt_Prog").attr("disabled", false);
+            }
+            else if ($(this).val() == "Hora Extra - 1 hora") {
+                $("#Quant_Horas").val(1);
+                $("#Quant_Horas").attr("disabled", true);
+                $("#Dia_Todo").val("2");
+                $("#Dia_Todo").attr("disabled", true);
+
+                var url = "/ProgHorasExtras/DataAtual";
+                $.get(url, null, function (data) {
+                    $("#Dt_Prog").val(data);
+                });
+                $("#Dt_Prog").attr("disabled", true);
+            }
+            else if ($(this).val() == "Hora Extra - 2 horas") {
+                $("#Quant_Horas").val(2);
+                $("#Quant_Horas").attr("disabled", true);
+                $("#Dia_Todo").val("2");
+                $("#Dia_Todo").attr("disabled", true);
+                var url = "/ProgHorasExtras/DataAtual";
+                $.get(url, null, function (data) {
+                    $("#Dt_Prog").val(data);
+                });
+                $("#Dt_Prog").attr("disabled", true);
+            }
+            else {
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+                $("#Dia_Todo").val("");
+                $("#Dia_Todo").attr("disabled", false);
+                $("#Dt_Prog").val("");
+                $("#Dt_Prog").attr("disabled", true);
+            }
+        });
+
+        $("#Dia_Todo").change(function () {
+            if ($(this).val() == "1") {
+                $("#Quant_Horas").val(8);
+                $("#Quant_Horas").attr("disabled", true);
+            }
+            else{
+                $("#Quant_Horas").val(0);
+                $("#Quant_Horas").attr("disabled", false);
+            }
+        });
+
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+
+        $("#IdContratos").change(function () {
+            $("#divLista").load("/ProgHorasExtras/ExibeFuncionarios", { idcontratos: $("#IdContratos").val()});
+        });
+    });
+
+    function IncluirItens() {
+        var checkedValue = "";
+        var inputElements = document.getElementsByClassName('checkthis');
+        for (var i = 0; inputElements[i]; ++i) {
+            if (inputElements[i].checked) {
+                checkedValue += inputElements[i].value + ";";
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ProgHorasExtrasCadastro", "ProgHorasExtras")",
+
+            data: { "check": checkedValue, "idcontratos": $("#IdContratos").val(), "tipo": $("#Tipo").val(), "dia_todo": $("#Dia_Todo").val(), "quant_horas": $("#Quant_Horas").val(), "dt_prog": $("#Dt_Prog").val() },
+            
+        async: false,
+        success: function (data) {
+            alert('Registros incluídos com sucesso!');
+            window.location.href = data;
+        },
+        dataType: 'json',
+        error: function (data) {
+            alert("Erro!");
+        }
+    });
+    }
+</script>
+
+@using (Html.BeginForm("ProgHorasExtrasCadastro", "ProgHorasExtras", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>@ViewBag.Title</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdProgHorasExtras)
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.LabelFor(model => model.IdContratos, htmlAttributes: new { @class = "control-label" })
+                    <select name="IdContratos" id="IdContratos" class="form-control" data-val="true" data-val-required="Contrato é obrigatório!">
+                        <option value="">-- Selecione um Contrato --</option>
+                        @foreach (DataRow row in ViewBag.Contratos)
+                        {
+                            if (Convert.ToInt32(Model.IdContratos) == Convert.ToInt32(row["idcontratos"]))
+                            {
+                                <option value="@row["idcontratos"]" selected>@row["contrato"] - @row["descricao"]</option>
+                            }
+                            else
+                            {
+                                <option value="@row["idcontratos"]">@row["contrato"] - @row["descricao"]</option>
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.IdContratos, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Tipo, htmlAttributes: new { @class = "control-label" })
+                    <select name="Tipo" id="Tipo" class="form-control" data-val="true" data-val-required="Tipo é obrigatório!">
+                        <option value="">-- Selecione o Tipo --</option>
+                        @if (Convert.ToString(Model.Tipo) == "Banco")
+                        {
+                            <option value="Banco" selected>Banco</option>
+                        }
+                        else
+                        {
+                            <option value="Banco">Banco</option>
+                        }
+                        @if (Convert.ToString(Model.Tipo) == "Sábado")
+                        {
+                            <option value="Sábado" selected>Sábado</option>
+                        }
+                        else
+                        {
+                            <option value="Sábado">Sábado</option>
+                        }
+                        @if (Convert.ToString(Model.Tipo) == "Domingo")
+                        {
+                            <option value="Domingo" selected>Domingo</option>
+                        }
+                        else
+                        {
+                            <option value="Domingo">Domingo</option>
+                        }
+                        @if (Convert.ToString(Model.Tipo) == "Feriado")
+                        {
+                            <option value="Feriado" selected>Feriado</option>
+                        }
+                        else
+                        {
+                            <option value="Feriado">Feriado</option>
+                        }
+                        @if (Convert.ToString(Model.Tipo) == "Hora Extra - 1 hora")
+                        {
+                            <option value="Hora Extra - 1 hora" selected>Hora Extra - 1 hora</option>
+                        }
+                        else
+                        {
+                            <option value="Hora Extra - 1 hora">Hora Extra - 1 hora</option>
+                        }
+                        @if (Convert.ToString(Model.Tipo) == "Hora Extra - 2 horas")
+                        {
+                            <option value="Hora Extra - 2 horas" selected>Hora Extra - 2 horas</option>
+                        }
+                        else
+                        {
+                            <option value="Hora Extra - 2 horas">Hora Extra - 2 horas</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Tipo, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Dia_Todo, htmlAttributes: new { @class = "control-label" })
+                    <select name="Dia_Todo" id="Dia_Todo" class="form-control" data-val="true" data-val-required="Período é obrigatório!">
+                        <option value="">-- Selecione o Período --</option>
+                        @if (Convert.ToString(Model.Dia_Todo) == "1")
+                        {
+                            <option value="1" selected>Dia Todo</option>
+                        }
+                        else
+                        {
+                            <option value="1">Dia Todo</option>
+                        }
+                        @if (Convert.ToString(Model.Dia_Todo) == "2")
+                        {
+                            <option value="2" selected>Definir horas</option>
+                        }
+                        else
+                        {
+                            <option value="2">Definir horas</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Dia_Todo, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Quant_Horas, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Quant_Horas, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Quant_Horas, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Dt_Prog, htmlAttributes: new { @class = "control-label" })
+                    <input class="form-control text-box single-line" data-val="true" data-val-required="Dt. Programação é obrigatória!" maxlength="10" disabled="True" id="Dt_Prog" name="Dt_Prog" type="datetime" value="@Model.Dt_Prog" />
+                    @Html.ValidationMessageFor(model => model.Dt_Prog, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <br />
+            
+            @Html.Partial("_ProgHorasExtrasFuncionarios")
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="button" onclick="IncluirItens()" value="Salvar" class="btn btn-success btn-sm" />
+                    <a href="@Url.Action("ProgHorasExtrasList","ProgHorasExtras")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

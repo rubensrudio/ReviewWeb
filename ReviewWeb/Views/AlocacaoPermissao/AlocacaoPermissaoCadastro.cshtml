@@ -1,0 +1,188 @@
+﻿@model Modelo.ModeloAlocacaoPermissao
+@using System.Data;
+
+@{
+    ViewBag.Title = "Permissão de Alocação de Funcionários";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+@using (Html.BeginForm("AlocacaoPermissaoCadastro", "AlocacaoPermissao", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>@ViewBag.Title</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdAlocacaoPermissao)
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.LabelFor(model => model.IdUsuarios, htmlAttributes: new { @class = "control-label" })
+                    <select name="IdUsuarios" id="IdUsuarios" class="form-control" data-val="true" data-val-required="Usuário é obrigatório!">
+                        <option value="">-- Selecione o Usuário --</option>
+                        @foreach (DataRow row in ViewBag.Usuarios)
+                        {
+                            if (Convert.ToInt32(Model.IdUsuarios) == Convert.ToInt32(row["idusuarios"]))
+                            {
+                                <option value="@row["idusuarios"]" selected>@row["nome"]</option>
+                            }
+                            else
+                            {
+                                <option value="@row["idusuarios"]">@row["nome"]</option>
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.IdUsuarios, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Permissao, htmlAttributes: new { @class = "control-label" })
+                    <select id="Permissao" name="Permissao" class="form-control input-group-sm">
+                        <option value="View" @if (Model.Permissao == "View") { @: selected
+                                                                                                                                                                }>
+                           Visualizar
+                        </option>
+                        <option value="Todos" @if (Model.Permissao == "Todos") { @: selected
+                                                                                                                                }>
+                            Todos
+                        </option>
+                        <option value="AC" @if (Model.Permissao == "AC") { @: selected
+                                                                                                }>
+                            AC
+                        </option>
+                        <option value="AL" @if (Model.Permissao == "AL") { @: selected
+                                                                                                }>
+                            AL
+                        </option>
+                        <option value="AM" @if (Model.Permissao == "AM") { @: selected
+                                                                                                }>
+                            AM
+                        </option>
+                        <option value="AP" @if (Model.Permissao == "AP") { @: selected
+                                                                                                }>
+                            AP
+                        </option>
+                        <option value="BA" @if (Model.Permissao == "BA") { @: selected
+                                                                                                }>
+                            BA
+                        </option>
+                        <option value="CE" @if (Model.Permissao == "CE") { @: selected
+                                                                                                }>
+                            CE
+                        </option>
+                        <option value="DF" @if (Model.Permissao == "DF") { @: selected
+                                                                                                }>
+                            DF
+                        </option>
+                        <option value="ES" @if (Model.Permissao == "ES") { @: selected
+                                                                                                }>
+                            ES
+                        </option>
+                        <option value="GO" @if (Model.Permissao == "GO") { @: selected
+                                                                                                }>
+                            GO
+                        </option>
+                        <option value="MA" @if (Model.Permissao == "MA") { @: selected
+                                                                                                }>
+                            MA
+                        </option>
+                        <option value="MG" @if (Model.Permissao == "MG") { @: selected
+                                                                                                }>
+                            MG
+                        </option>
+                        <option value="MS" @if (Model.Permissao == "MS") { @: selected
+                                                                                                }>
+                            MS
+                        </option>
+                        <option value="MT" @if (Model.Permissao == "MT") { @: selected
+                                                                                                }>
+                            MT
+                        </option>
+                        <option value="PA" @if (Model.Permissao == "PA") { @: selected
+                                                                                                }>
+                            PA
+                        </option>
+                        <option value="PB" @if (Model.Permissao == "PB") { @: selected
+                                                                                                }>
+                            PB
+                        </option>
+                        <option value="PE" @if (Model.Permissao == "PE") { @: selected
+                                                                                                }>
+                            PE
+                        </option>
+                        <option value="PI" @if (Model.Permissao == "PI") { @: selected
+                                                                                                }>
+                            PI
+                        </option>
+                        <option value="PR" @if (Model.Permissao == "PR") { @: selected
+                                                                                                }>
+                            PR
+                        </option>
+                        <option value="RJ" @if (Model.Permissao == "RJ") { @: selected
+                                                                                                }>
+                            RJ
+                        </option>
+                        <option value="RN" @if (Model.Permissao == "RN") { @: selected
+                                                                                                }>
+                            RN
+                        </option>
+                        <option value="RO" @if (Model.Permissao == "RO") { @: selected
+                                                                                                }>
+                            RO
+                        </option>
+                        <option value="RR" @if (Model.Permissao == "RR") { @: selected
+                                                                                                }>
+                            RR
+                        </option>
+                        <option value="RS" @if (Model.Permissao == "RS") { @: selected
+                                                                                                }>
+                            RS
+                        </option>
+                        <option value="SC" @if (Model.Permissao == "SC") { @: selected
+                                                                                                }>
+                            SC
+                        </option>
+                        <option value="SE" @if (Model.Permissao == "SE") { @: selected
+                                                                                                }>
+                            SE
+                        </option>
+                        <option value="SP" @if (Model.Permissao == "SP") { @: selected
+                                                                                                }>
+                            SP
+                        </option>
+                        <option value="TO" @if (Model.Permissao == "TO") { @: selected
+                                                                                                }>
+                            TO
+                        </option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Permissao, "", new { @class = "text-danger" })
+                </div> 
+                <div class="col-md-9"> </div>               
+            </div>            
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdAlocacaoPermissao > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","AlocacaoPermissao",new { id = @Model.IdAlocacaoPermissao })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("AlocacaoPermissaoList", "AlocacaoPermissao")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

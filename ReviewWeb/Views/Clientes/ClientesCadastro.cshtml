@@ -1,0 +1,297 @@
+﻿@model Modelo.ModeloCliente
+
+@{
+    ViewBag.Title = "Cadastro de Cliente";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+@using (Html.BeginForm("ClientesCadastro", "Clientes", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Inserir Cliente</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdClientes)
+            @Html.HiddenFor(model => Model.IdEmpresas)
+            @Html.HiddenFor(model => Model.IdEnderecos)
+            @Html.HiddenFor(model => Model.Endereco.IdEnderecos)
+            <div class="row">
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Razao_Social, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Razao_Social, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Razao_Social, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Nome_Fantasia, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Nome_Fantasia, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Nome_Fantasia, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.CNPJ, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.CNPJ, new { htmlAttributes = new { @class = "form-control cnpj" } })
+                    @Html.ValidationMessageFor(model => model.CNPJ, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Insc_Est, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Insc_Est, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Insc_Est, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Responsavel, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Responsavel, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Responsavel, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Telefone1, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Telefone1, new { htmlAttributes = new { @class = "form-control phone_br" } })
+                    @Html.ValidationMessageFor(model => model.Telefone1, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Telefone2, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Telefone2, new { htmlAttributes = new { @class = "form-control phone_br" } })
+                    @Html.ValidationMessageFor(model => model.Telefone2, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Endereco.Logradouro, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Logradouro, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Logradouro, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.Bairro, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Bairro, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Bairro, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.Cidade, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Cidade, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Cidade, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.UF, htmlAttributes: new { @class = "control-label" })
+                    <select id="Endereco.UF" name="Endereco.UF" class="form-control input-group-sm">
+                        <option value="AC" @if (Model.Endereco.UF == "AC") { @: selected
+                                                                }>
+                            AC
+                        </option>
+                        <option value="AL" @if (Model.Endereco.UF == "AL") { @: selected
+                                                                }>
+                            AL
+                        </option>
+                        <option value="AM" @if (Model.Endereco.UF == "AM") { @: selected
+                                                                }>
+                            AM
+                        </option>
+                        <option value="AP" @if (Model.Endereco.UF == "AP") { @: selected
+                                                                }>
+                            AP
+                        </option>
+                        <option value="BA" @if (Model.Endereco.UF == "BA") { @: selected
+                                                                }>
+                            BA
+                        </option>
+                        <option value="CE" @if (Model.Endereco.UF == "CE") { @: selected
+                                                                }>
+                            CE
+                        </option>
+                        <option value="DF" @if (Model.Endereco.UF == "DF") { @: selected
+                                                                }>
+                            DF
+                        </option>
+                        <option value="ES" @if (Model.Endereco.UF == "ES") { @: selected
+                                                                }>
+                            ES
+                        </option>
+                        <option value="GO" @if (Model.Endereco.UF == "GO") { @: selected
+                                                                }>
+                            GO
+                        </option>
+                        <option value="MA" @if (Model.Endereco.UF == "MA") { @: selected
+                                                                }>
+                            MA
+                        </option>
+                        <option value="MG" @if (Model.Endereco.UF == "MG") { @: selected
+                                                                }>
+                            MG
+                        </option>
+                        <option value="MS" @if (Model.Endereco.UF == "MS") { @: selected
+                                                                }>
+                            MS
+                        </option>
+                        <option value="MT" @if (Model.Endereco.UF == "MT") { @: selected
+                                                                }>
+                            MT
+                        </option>
+                        <option value="PA" @if (Model.Endereco.UF == "PA") { @: selected
+                                                                }>
+                            PA
+                        </option>
+                        <option value="PB" @if (Model.Endereco.UF == "PB") { @: selected
+                                                                }>
+                            PB
+                        </option>
+                        <option value="PE" @if (Model.Endereco.UF == "PE") { @: selected
+                                                                }>
+                            PE
+                        </option>
+                        <option value="PI" @if (Model.Endereco.UF == "PI") { @: selected
+                                                                }>
+                            PI
+                        </option>
+                        <option value="PR" @if (Model.Endereco.UF == "PR") { @: selected
+                                                                }>
+                            PR
+                        </option>
+                        <option value="RJ" @if (Model.Endereco.UF == "RJ") { @: selected
+                                                                }>
+                            RJ
+                        </option>
+                        <option value="RN" @if (Model.Endereco.UF == "RN") { @: selected
+                                                                }>
+                            RN
+                        </option>
+                        <option value="RO" @if (Model.Endereco.UF == "RO") { @: selected
+                                                                }>
+                            RO
+                        </option>
+                        <option value="RR" @if (Model.Endereco.UF == "RR") { @: selected
+                                                                }>
+                            RR
+                        </option>
+                        <option value="RS" @if (Model.Endereco.UF == "RS") { @: selected
+                                                                }>
+                            RS
+                        </option>
+                        <option value="SC" @if (Model.Endereco.UF == "SC") { @: selected
+                                                                }>
+                            SC
+                        </option>
+                        <option value="SE" @if (Model.Endereco.UF == "SE") { @: selected
+                                                                }>
+                            SE
+                        </option>
+                        <option value="SP" @if (Model.Endereco.UF == "SP") { @: selected
+                                                                }>
+                            SP
+                        </option>
+                        <option value="TO" @if (Model.Endereco.UF == "TO") { @: selected
+                                                                }>
+                            TO
+                        </option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Endereco.UF, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.CEP, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.CEP, new { htmlAttributes = new { @class = "form-control cep" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.CEP, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-8">
+                    <br />
+                    @if(Model.ClienteFornecedor == "cl")
+                    {
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cf", new { value = "Ambos" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Ambos  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cl", new { value = "Cliente", @checked = "checked" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Cliente  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "fo", new { value = "Fornecedor" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Fornecedor  ")
+                    }
+                    else if(Model.ClienteFornecedor == "fo")
+                    {
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cf", new { value = "Ambos" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Ambos  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cl", new { value = "Cliente" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Cliente  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "fo", new { value = "Fornecedor", @checked = "checked" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Fornecedor  ")
+                    }
+                    else
+                    {
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cf", new { value = "Ambos", @checked = "checked" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Ambos  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "cl", new { value = "Cliente" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Cliente  ")
+                        @Html.RadioButtonFor(model => model.ClienteFornecedor, "fo", new { value = "Fornecedor" })
+                        @Html.Raw(" ")
+                        @Html.Raw("Fornecedor  ")
+                    }
+                    
+                    @Html.ValidationMessageFor(model => model.ClienteFornecedor, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Ramo_Atividade, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.Ramo_Atividade, 5, 100, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Ramo_Atividade, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <br />
+            @if (ViewBag.idclientes > 0)
+            {
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.Partial("_LocaisAtuacao", Model)
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <br />
+            }
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdEmpresas > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Clientes",new { id = @Model.IdClientes })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("ClientesList","Clientes")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

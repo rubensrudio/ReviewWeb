@@ -1,0 +1,55 @@
+﻿@model Modelo.ModeloAlocacaoFunc
+@using System.Data;
+
+@{
+    ViewBag.Title = "Registro de Funcionário";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+@using (Html.BeginForm("AlocacaoFuncCadastro", "AlocacaoFunc", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Alterar Registro</h4>
+            <hr />
+            @Html.HiddenFor(model => Model.IdAlocacao_Func)
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.LabelFor(model => model.Funcionario, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Funcionario, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+
+                <div class="col-md-4"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Horario, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Horario, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Horario_Fim, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Horario_Fim, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+
+            </div>
+
+            
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdAlocacao_Func > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Treinamentos",new { id = @Model.IdAlocacao_Func })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("AlocacaoFuncList","AlocacaoFunc")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

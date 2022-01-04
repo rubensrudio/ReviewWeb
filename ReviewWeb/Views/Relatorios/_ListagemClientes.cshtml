@@ -1,0 +1,95 @@
+﻿@model PagedList.IPagedList<Modelo.ModeloCliente>
+
+@{
+    ViewBag.Title = "ListagemClientes";
+}
+
+<style>
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+
+.table th,
+.table td {
+  padding: 0.35rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+  font-size:14px;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody + tbody {
+  border-top: 2px solid #dee2e6;
+}
+
+.table .table {
+  background-color: #fff;
+}
+
+.table-sm th,
+.table-sm td {
+  padding: 0.3rem;
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered thead th,
+.table-bordered thead td {
+  border-bottom-width: 2px;
+}
+
+.table-borderless th,
+.table-borderless td,
+.table-borderless thead th,
+.table-borderless tbody + tbody {
+  border: 0;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+</style>
+
+<center><h2>Relatório de Clientes</h2></center>
+
+<table class="table table-striped">
+    <tr>
+        <th width="100px" align="left">
+            Código
+        </th>
+        <th width="620px" align="left">
+            Cliente
+        </th>
+        <th align="left">
+            CNPJ
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IdClientes)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Nome_Fantasia)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CNPJ)
+        </td>
+    </tr>
+}
+
+</table>

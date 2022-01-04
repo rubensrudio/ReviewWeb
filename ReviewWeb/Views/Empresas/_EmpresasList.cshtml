@@ -1,0 +1,73 @@
+﻿@model System.Data.DataTable
+@using System.Data;
+
+<div id="divLista">
+    <table id="mytable" class="table table-bordered table-striped">
+        <tr>
+            <th><input type="checkbox" id="checkall" /></th>
+            <th>Código</th>
+            <th>Razão Social</th>
+            <th>Nome Fantasia</th>
+            <th>CNPJ</th>
+            <th>Editar</th>
+            <th>Excluir</th>
+        </tr>
+        @{ int i = 0; }
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                <td><input type="checkbox" name="checkEmpresas[]" value="@row["idempresas"]" class="checkthis" /></td>
+                <td style="text-align:center">@row["idempresas"]</td>
+                <td>@row["razao_social"]</td>
+                <td>@row["nome_fantasia"]</td>
+                <td>@row["cnpj"]</td>
+
+                <td>
+                    <div style="float:left;text-align:center;width:100%"><a title="Editar" href="@Url.Action("EmpresasCadastro", "Empresas", new { idempresas = row["idempresas"] })" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-pencil.svg" style="width:16px;height:16px"/></a></div>
+                </td>
+                <td>
+                    <div style="float:left;text-align:center;width:100%">
+                        <button title="Excluir" class="btn btn-sm btn-outline-secondary" type="button" onclick="MensagemConfirma('Atenção','Tem certeza que deseja apagar o registro?','@Url.Action("Excluir", "Empresas", new { id = row["idempresas"] })')"><img src="../Images/svg/si-glyph-trash.svg" style="width:16px;height:16px" /></button>
+                    </div>
+                </td>
+            </tr>
+            i = i + 1;
+        }
+
+    </table>
+    <div style="text-align:center">
+        @if (ViewBag.PageNum > 1)
+        {
+            @Ajax.ActionLink("<<", "EmpresasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=1&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+            @Html.Raw(" ")
+            @Ajax.ActionLink("<", "EmpresasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageAnt + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+        }
+        else
+        {
+            <button class="btn btn-sm btn-secondary" type="button" disabled><<</button>
+            @Html.Raw(" ")
+            <button class="btn btn-sm btn-secondary" type="button" disabled><</button>
+        }
+
+
+        @Html.Raw(" ")
+        @ViewBag.PageNum
+        @Html.Raw(" de ")
+        @ViewBag.PageUlt
+        @Html.Raw(" ")
+
+        @if (ViewBag.PageNum < ViewBag.PageUlt)
+        {
+            @Ajax.ActionLink(">", "EmpresasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageProx + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+            @Html.Raw(" ")
+            @Ajax.ActionLink(">>", "EmpresasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageUlt + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+        }
+        else
+        {
+            <button class="btn btn-sm btn-secondary" type="button" disabled>></button>
+            @Html.Raw(" ")
+            <button class="btn btn-sm btn-secondary" type="button" disabled>>></button>
+        }
+    </div>
+</div>
+

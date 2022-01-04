@@ -1,0 +1,148 @@
+﻿@model Modelo.ModeloContratos
+
+@{
+    ViewBag.Title = "Cadastro de Contratos";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<script src="~/Scripts/ClientesLocalidadesCombo.js"></script>
+
+@using (Html.BeginForm("ContratosCadastro", "Contratos", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Inserir Contrato</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdContratos)
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.LabelFor(model => model.Clientes, htmlAttributes: new { @class = "control-label" })
+                    <select name="idclientes" id="idclientes" class="form-control">
+                        <option value="">--Selecione--</option>
+                        @foreach (var options in ViewBag.Clientes)
+                        {
+                            if (options.Selected == true)
+                            {
+                                <option value="@options.Value" selected="selected">@options.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@options.Value">@options.Text</option>
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Clientes, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Clientes_Localidades, htmlAttributes: new { @class = "control-label" })
+                    <select name="IdContratos_Clientes_Localidades" id="idclientes_localidades" class="form-control">
+                        <option value="">--Selecione--</option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Clientes_Localidades, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Contrato, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Contrato, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Contrato, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-9">
+                    @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Dt_Inicio, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Dt_Inicio, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Dt_Inicio, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Dt_Termino, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Dt_Termino, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Dt_Termino, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Vl_Contrato, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Vl_Contrato, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Vl_Contrato, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Responsavel, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Responsavel, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Responsavel, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.E_Mail, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.E_Mail, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.E_Mail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Observacoes, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.Observacoes, 5, 100, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Observacoes, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Ativo, htmlAttributes: new { @class = "control-label" })
+                    <select name="Ativo" id="Ativo" class="form-control" data-val="true" data-val-required="Ativo é obrigatório!">
+                        <option value="1"
+                                @if (Convert.ToInt32(Model.Ativo) == 1) { @: selected
+                                                                                            }>
+                            Sim
+                        </option>
+                        <option value="0"
+                                @if (Convert.ToInt32(Model.Ativo) == 0) { @: selected
+                                                                                            }>
+                            Não
+                        </option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Ativo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+
+            
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdContratos > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Contratos",new { id = @Model.IdContratos })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("ContratosList","Contratos")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+
+    
+}

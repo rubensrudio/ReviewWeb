@@ -1,0 +1,111 @@
+﻿@model System.Data.DataTable
+@using System.Data
+@{
+    ViewBag.Title = "ListagemHoras";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<script>
+    $(document).ready(function(){
+        $("#imprimir").click(function(event){
+            event.preventDefault();
+            var rateio = 0;
+            if ($("#Rateio").is(':checked')) {
+                rateio = 1;
+            }
+            window.open("@Url.Action("HorasContrato", "Relatorios")" + "?tipo=1&dataInicial=" + $("#dataInicial").val() + "&dataFinal=" + $("#dataFinal").val() + "&IdContratos=" + $("#IdContratos").val() + "&IdFuncionarios=" + $("#IdFuncionarios").val() + "&Rateio=" + rateio);
+        });
+
+        $("#imprimir_tela").click(function(event){
+            event.preventDefault();
+            var rateio = 0;
+            if ($("#Rateio").is(':checked')) {
+                rateio = 1;
+            }
+            $.ajax({
+                //base address/controller/Action
+                url: "@Url.Action("HorasContrato", "Relatorios")",
+                type: 'GET',
+                dataType: 'html',
+                data: {
+                    //Passing Input parameter
+                    "tipo": 2,
+                    "dataInicial": $("#dataInicial").val(),
+                    "dataFinal": $("#dataFinal").val(),
+                    "IdContratos": $("#IdContratos").val(),
+                    "IdFuncionarios": $("#IdFuncionarios").val(),
+                    "Rateio": rateio
+                },
+                success: function (result) {
+                    alert(result);
+                    $(".well").html(result);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            return false;
+        });
+    })
+</script>
+
+<div class="well">
+    <div class="panel-heading">
+        
+    </div>
+    <div class="form-horizontal">
+        <h4>Relatório de Horas</h4>
+        <hr />
+        <form method="post" action="/Relatorios/HorasContrato" id="frmVenda" class="form-horizontal">
+            <div class="form-group">
+                <label for="IdContratos" class="col-sm-2 control-label">Contrato:</label>
+                <div class="col-sm-6">
+                    <select name="IdContratos" id="IdContratos" class="form-control">
+                        <option value="">-- Todos --</option>
+                        @foreach (DataRow row in ViewBag.Contratos)
+                        {
+                            <option value="@row["idcontratos"]">@row["contrato"] - @row["descricao"]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="IdFuncionarios" class="col-sm-2 control-label">Funcionário:</label>
+                <div class="col-sm-6">
+                    <select name="IdFuncionarios" id="IdFuncionarios" class="form-control">
+                        <option value="">-- Todos --</option>
+                        @foreach (DataRow row in ViewBag.Funcionarios)
+                        {
+                            <option value="@row["idfuncionarios"]">@row["nome"] @row["sobrenome"]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dataInicial" class="col-sm-2 control-label">Data Inicial:</label>
+                <div class="col-sm-4">
+                    <input type="date" class="form-control" id="dataInicial" name="dataInicial" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dataFinal" class="col-sm-2 control-label">Data Final:</label>
+                <div class="col-sm-4">
+                    <input type="date" class="form-control" id="dataFinal" name="dataFinal" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <input type="checkbox" id="Rateio" name="Rateio"> Rateio
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                   <button title="Imprimir em Tela" id="imprimir_tela" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-print.svg" style="width:32px;height:32px" /><br />Imprimir em Tela</button>
+                   <a title="Imprimir" target="_blank" href="#" id="imprimir" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-print.svg" style="width:32px;height:32px" /><br />Gerar PDF</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

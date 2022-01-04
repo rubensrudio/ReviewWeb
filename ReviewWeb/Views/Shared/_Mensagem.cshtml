@@ -1,0 +1,158 @@
+﻿<!--
+    Html e Script para gerar Mensagens Modal com uso do Bootstrap em sua Aplicação
+
+      * Carrega Mensagem quando chamada como extensão de sua view
+      * Funcão MensagemvConfirma - Gera Modal com mensagem de confimação
+
+    Visite http://www.codigoexpresso.com.br
+-->
+
+@{
+    var Mensagem = "";
+    var Titulo = "";
+    if (TempData["Mensagem"] != null)
+    {
+        Mensagem = TempData["Mensagem"].ToString();
+        Titulo = TempData["Titulo"].ToString();
+    }
+}
+
+@if (Mensagem != "")
+{
+    <!--Formulario principal para Display de Mensagens /Views/shared/_Mensagem.cshtml-->
+    <div id="ModalMensagem" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Titulo</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            @Html.Raw(Mensagem)
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#ModalMensagem").modal('show');
+    });
+    </script>
+
+    <!--Fim Formulario principal para Display de Mensagens -->
+}
+
+<!--Formulario principal para Display de Mensagem de Confirmação /Views/shared/_Mensagem.cshtml-->
+
+<div id="ModalConfirma" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="BodyConfirma">
+            <!--Conteudo Dinamico-->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // Funcao para Carregar Mensagem de confirmação, se teclar no botão SIM desvia para o link informado
+    function MensagemConfirma(Titulo, Mensagem, Link)
+    {
+        var data = '<div class="modal-header">' +
+                   '<div class="col-md-11""><h4 class="modal-title">' + Titulo + '</h4></div>' +
+                  '<div class="col-md-1""><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>' +
+                  '</div>'+
+                  '<div class="modal-body">'+
+                  '<div class="row">'+
+                  '<div class="col-md-12 text-center">'+Mensagem+'</div>'+
+                  '</div>'+
+                  '</div>'+
+                  '<div class="modal-footer">' +
+                  '<button type="button" onClick="window.location.href = \'' + Link + '\'" class="btn btn-sm btn-secundary">Sim</button>' +
+                  '<button type="button" class="btn btn-sm btn-secundary" data-dismiss="modal">Não</button>' +
+                  '</div>';
+        $('#BodyConfirma').html(data);
+        $("#ModalConfirma").modal('show');
+    }
+
+    // Funcao modificada Rubens Rudio.
+    function MensagemConfirmaJquery(Titulo, Mensagem) {
+        var data = '<div class="modal-header">' +
+                   '<div class="col-md-11""><h4 class="modal-title">' + Titulo + '</h4></div>' +
+                  '<div class="col-md-1""><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>' +
+                  '</div>' +
+                  '<div class="modal-body">' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-center">' + Mensagem + '</div>' +
+                  '</div>' +
+                  '</div>' +
+                  '<div class="modal-footer">' +
+                  '<button type="button" id="MensagemConfirma" onclick="MensagemJquery()" class="btn btn-sm btn-secundary" data-dismiss="modal">Sim</button>' +
+                  '<button type="button" class="btn btn-sm btn-secundary" data-dismiss="modal">Não</button>' +
+                  '</div>';
+        $('#BodyConfirma').html(data);
+        $("#ModalConfirma").modal('show');
+    }
+
+    // Funcao modificada Rubens Rudio.
+    function MensagemAlocacao(nome,parent,idfuncionario, datahora) {
+        var data = '<div class="modal-header">' +
+                   '<div class="col-md-11""><h4 class="modal-title">Realocação de Funcionário</h4></div>' +
+                  '<div class="col-md-1""><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>' +
+                  '</div>' +
+                  '<div class="modal-body">' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-left">Funcionário: ' + nome + '</div>' +
+                  '</div><br>' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-left">Situação: ' +
+                  '<select id="situacao">' +
+                  '<option value="Ativo">Ativo</option>' +
+                  '<option value="Ocioso">Ocioso</option>' +
+                  '<option value="Demissão">Demissão</option>' +
+                  '</select>' +
+                  '</div>' +
+                  '</div><br>' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-left">Data/Hora Mudança: <input id="horario" type="text" size="30" value="' + datahora + '"></div>' +
+                  '</div><br>' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-left">Observações: <textarea id="observacao" cols="50" rows="5"></textarea></div>' +
+                  '</div>' +
+                  '</div>' +
+                  '<div class="modal-footer">' +
+                  '<button type="button" id="MensagemConfirma" onclick="MensagemAlocacao2(\'' + parent + '\',\'' + idfuncionario + '\',document.getElementById(\'situacao\').value,document.getElementById(\'horario\').value,document.getElementById(\'observacao\').value)" class="btn btn-sm btn-secundary" data-dismiss="modal">Sim</button>' +
+                  '<button type="button" class="btn btn-sm btn-secundary" data-dismiss="modal">Não</button>' +
+                  '</div>';
+        $('#BodyConfirma').html(data);
+        $("#ModalConfirma").modal('show');
+    }
+
+    // Funcao para Carregar Mensagem
+    function Mensagem(Titulo, Mensagem) {
+        var data = '<div class="modal-header">' +
+                  '<div class="col-md-11""><h4 class="modal-title">' + Titulo + '</h4></div>' +
+                  '<div class="col-md-1""><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></div>' +
+                  '</div>' +
+                  '<div class="modal-body">' +
+                  '<div class="row">' +
+                  '<div class="col-md-12 text-center">' + Mensagem + '</div>' +
+                  '</div>' +
+                  '</div>' +
+                  '<div class="modal-footer">' +
+                  '<button type="button" class="btn btn-sm btn-secundary" data-dismiss="modal">OK</button>' +
+                  '</div>';
+        $('#BodyConfirma').html(data);
+        $("#ModalConfirma").modal('show');
+    }
+
+</script>
+
+<!--Fim Formulario principal para Display de Mensagem de Confirmação -->

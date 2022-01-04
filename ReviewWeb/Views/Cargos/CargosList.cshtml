@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "Cadastro de Cargos";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+@model System.Data.DataTable
+
+<script>
+    $(document).ready(function () {
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+
+        $("[data-toggle=tooltip]").tooltip();
+
+
+    });
+
+    function MensagemJquery() {
+        var checkedValue = "";
+        var inputElements = document.getElementsByClassName('checkthis');
+        for (var i = 0; inputElements[i]; ++i) {
+            if (inputElements[i].checked) {
+                checkedValue += inputElements[i].value + ";";
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ExcluirSelecionados", "Cargos")",
+
+            data: { "check": checkedValue },
+            async: false,
+            success: function (data) {
+                $("#divLista").load("/Cargos/CargosList");
+                Mensagem('Confirmação', 'Registros excluídos com sucesso!');
+            },
+            dataType: 'html',
+            error: function (data) {
+                alert("Erro!");
+            }
+        });
+    }
+
+</script>
+
+<div class="well">
+    <h3 class="h3 mb-3 font-weight-normal text-center">Cadastro de Cargos</h3>
+
+    @using (Ajax.BeginForm("CargosList", "Cargos", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }))
+    {
+        <div class="row">
+            <div class="col-md-4">
+                Pesquisar por:
+                <select name="buscapor" id="buscapor" class="form-control">
+                    <option value="Descrição" selected>Descrição</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                Valor:
+                @Html.TextBox("valor", null, new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <br />
+                        <button name="submitButton" value="Pesquisar" title="Pesquisar" class="btn btn-sm btn-outline-secondary" type="submit"><img src="../Images/svg/si-glyph-magnifier.svg" style="width:16px;height:16px" /> Pesquisar</button>
+                    </div>
+                    <div class="col-md-6">
+                        Itens:
+                        @Html.TextBox("registros", (int)ViewBag.RowsPage, new { @class = "form-control", style = "width:50px" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                Ordenar por:
+                <select name="ordenapor" id="ordenapor" class="form-control">
+                    <option value="Código">Código</option>
+                    <option value="Descrição" selected>Descrição</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <a title="Inserir" href="@Url.Action("CargosCadastro","Cargos", new { idcargos = 0 })" class="btn btn-sm btn-outline-secondary"><img src="../Images/svg/si-glyph-document.svg" style="width:32px;height:32px" /><br />Inserir</a>
+                        <button name="submitButton" id="ExcluirSelecionados" value="ExcluirSelecionados" onclick="MensagemConfirmaJquery('Atenção','Deseja excluir todos registros selecionados?')" title="Excluir Selecionados" class="btn btn-sm btn-outline-secondary" type="button"><img src="../Images/svg/si-glyph-trash.svg" style="width:32px;height:32px" /><br />Excluir Selecionados</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <br />
+    @Html.Partial("_CargosList", Model)
+</div>

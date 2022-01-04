@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+</head>
+<body>
+    <div>
+        <div class="div-top-pag">
+            <div style="float:left;width:200px"><img src="../Images/@Session["logo"]" /></div>
+            <div>@Html.Partial("../Home/Topo")</div>
+        </div>
+        
+        <div class="row" style="min-height:300px">
+            <div class="col-md-2">
+                @if (Session["idusuarios"] != null)
+                {
+                    @Html.Action("Menu", "Home")
+                }
+                else
+                {
+                    @Html.Action("Menu2", "Home")
+                }
+            </div>
+            <div class="col-md-10">
+                
+                    @RenderBody()
+                
+            </div>
+        </div>
+
+        <div class="card-footer">
+                @Html.Partial("../Home/Rodape")
+        </div>
+
+    </div>
+    @RenderSection("scripts", required: false)
+
+    @{Html.RenderPartial("~/Views/Shared/_Mensagem.cshtml");}
+</body>
+</html>

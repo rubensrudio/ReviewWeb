@@ -1,0 +1,41 @@
+﻿@using System.Data;
+
+<script>
+    $(document).ready(function () {
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+
+        $("[data-toggle=tooltip]").tooltip();
+
+
+    });
+</script>
+
+<div id="divLista">
+    <table id="mytable" class="table table-bordered table-striped">
+        <tr>
+            <th><input type="checkbox" id="checkall" /></th>
+            <th>Funcionário</th>
+        </tr>
+        @{ int i = 0; }
+        @foreach (DataRow row in ViewBag.Funcionarios)
+        {
+            <tr>
+                <td><input type="checkbox" name="checkProgHorasExtrasFuncionarios[]" value="@row["idfuncionarios"]" class="checkthis" /></td>
+                <td>@row["nome"] @row["sobrenome"]</td>
+            </tr>
+            i = i + 1;
+        }
+    </table>
+</div>
+

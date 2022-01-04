@@ -1,0 +1,104 @@
+﻿@model System.Data.DataTable
+@using System.Data;
+
+@{
+    ViewBag.Title = "RelHistograma";
+}
+
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+        font-family: Arial;
+    }
+
+        .table th,
+        .table td {
+            padding: 0.35rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .table .table {
+            background-color: #fff;
+        }
+
+    .table-sm th,
+    .table-sm td {
+        padding: 0.3rem;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered thead th,
+        .table-bordered thead td {
+            border-bottom-width: 2px;
+        }
+
+    .table-borderless th,
+    .table-borderless td,
+    .table-borderless thead th,
+    .table-borderless tbody + tbody {
+        border: 0;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<div style="display:block; page-break-before:always;width:100%">
+        <center><h1>Relatório de Histograma</h1></center>
+
+        <table style="width:100%">
+            @foreach (DataRow row2 in ViewBag.Contratos)
+            {
+                <tr><td style="font-size:16pt" align="left"><b>@row2["contrato"] - @row2["descricao"]</b></td></tr>
+
+                <tr>
+                    <td style="font-size:12pt" align="left">
+                    <table width="100%" style="border-spacing:0px">
+                        <tr>
+                            <td align="left" style="border:solid 1px"><b>Colaborador</b></td>
+                            @for (int i = 1; i <= 31; i++)
+                            {
+                            <td align="center" style="border:solid 1px"><b>@i</b></td>
+                            }
+                        </tr>
+                        @for (int j = 1; j <= 5; j++)
+                        {
+                        <tr>
+                            <td align="left" style="border:solid 1px">&nbsp;</td>
+                            @for (int x = 1; x <= 31; x++)
+                            {
+                                <td align="center" style="border:solid 1px">&nbsp;</td>
+                            }
+                        </tr>
+                        }
+                    </table>
+                    </td>
+                </tr>
+
+                <tr><td style="font-size:16pt" align="left">&nbsp;</td></tr>
+            }
+        </table>
+</div>
+

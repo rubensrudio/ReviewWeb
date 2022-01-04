@@ -1,0 +1,51 @@
+﻿@using System.Data;
+
+<div id="div_dados">
+    @if (ViewBag.idfuncionarios > 0)
+    {
+        <h2>@ViewBag.nome</h2>
+
+        if (ViewBag.exame_vermelho != "")
+        {
+            <div class="row"><img src="../Images/alerta_vermelho.png" />&nbsp;&nbsp;@ViewBag.exame_vermelho</div>
+        }
+
+        if (ViewBag.treinamento_vermelho != "")
+        {
+            <div class="row"><img src="../Images/alerta_vermelho.png" />&nbsp;&nbsp;@ViewBag.treinamento_vermelho</div>
+        }
+
+        if (ViewBag.exame_amarelo != "")
+        {
+            <div class="row"><img src="../Images/alerta_amarelo.png" />&nbsp;&nbsp;@ViewBag.exame_amarelo</div>
+        }
+
+        if (ViewBag.treinamento_amarelo != "")
+        {
+            <div class="row"><img src="../Images/alerta_amarelo.png" />&nbsp;&nbsp;@ViewBag.treinamento_amarelo</div>
+        }
+
+        <br />
+
+        foreach (DataRow row in ViewBag.Dados)
+        {
+                <div class="row">UF: @row["uf"]</div>
+                <div class="row">Cliente: @row["cliente"]</div>
+                <div class="row">Contrato: @row["contrato"]</div>
+                <div class="row">Início: @row["horario"] - Término: @row["horario_fim"]</div>
+                <div class="row">Tempo: @row["tempo"] horas</div>
+                <div class="row">Realocado por: @row["usuario"]</div>
+                <div class="row">--------------------------------------------------</div>
+        }
+    }
+    else if (ViewBag.contrato > 0)
+    {
+        foreach (DataRow row in ViewBag.Dados)
+        {
+            <div class="row">Contrato: @row["contrato"]</div>
+            <div class="row">Descrição: @row["descricao"]</div>
+            <div class="row">Data Início: @row["dt_inicio"]</div>
+            <div class="row">Data Término: @row["dt_termino"]</div>
+        }
+    }
+</div>

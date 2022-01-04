@@ -1,0 +1,55 @@
+﻿@model Modelo.ModeloCargos
+@using System.Data;
+
+@{
+    ViewBag.Title = "Cadastro de Cargos";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+@using (Html.BeginForm("CargosCadastro", "Cargos", FormMethod.Post, new { enctype = "multipart/form-data", id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Inserir Cargo</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdCargos)
+            <div class="row">
+                <div class="col-md-8">
+                    @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Salario_Medio, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Salario_Medio, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Salario_Medio, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdCargos > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Cargos",new { id = @Model.IdCargos })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("CargosList","Cargos")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

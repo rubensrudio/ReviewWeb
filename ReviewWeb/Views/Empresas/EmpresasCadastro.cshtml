@@ -1,0 +1,347 @@
+﻿@model Modelo.ModeloEmpresa
+
+@{
+    ViewBag.Title = "Cadastro de Empresa";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    if (Model.Nome_Arquivo != "")
+    {
+        ViewData["logo"] = Model.IdEmpresas + "." + ViewData["ext"];
+    }
+    else
+    {
+        ViewData["logo"] = "";
+    }
+}
+
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $(document).on('change', '.btn-file :file', function () {
+            var input = $(this),
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [label]);
+        });
+
+        $('.btn-file :file').on('fileselect', function (event, label) {
+
+            var input = $(this).parents('.input-group').find(':text'),
+		        log = label;
+
+            if (input.length) {
+                input.val(log);
+            } else {
+                if (log) alert(log);
+            }
+
+        });
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img-upload').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+
+
+    });
+</script>
+
+<style>
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#img-upload{
+    width: 100%;
+}
+</style>
+
+@using (Html.BeginForm("EmpresasCadastro","Empresas", FormMethod.Post, new { enctype = "multipart/form-data", id = "form"}))
+{
+    @Html.AntiForgeryToken()
+    <div class="well">
+        <div class="form-horizontal">
+            <h4>Inserir Empresa</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => Model.IdEmpresas)
+            @Html.HiddenFor(model => Model.IdEnderecos)
+            @Html.HiddenFor(model => Model.Endereco.IdEnderecos)
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Razao_Social, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Razao_Social, new { htmlAttributes = new { @class = "form-control" } } )
+                    @Html.ValidationMessageFor(model => model.Razao_Social, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Nome_Fantasia, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Nome_Fantasia, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Nome_Fantasia, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4" style="text-align:right">
+                    <img src="../../Images/logo_@ViewData["logo"]" id="img" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.CNPJ, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.CNPJ, new { htmlAttributes = new { @class = "form-control cnpj" } })
+                    @Html.ValidationMessageFor(model => model.CNPJ, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Insc_Est, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Insc_Est, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Insc_Est, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    @Html.LabelFor(model => model.Responsavel, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Responsavel, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Responsavel, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Telefone1, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Telefone1, new { htmlAttributes = new { @class = "form-control phone_br" } })
+                    @Html.ValidationMessageFor(model => model.Telefone1, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.Telefone2, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Telefone2, new { htmlAttributes = new { @class = "form-control phone_br" } })
+                    @Html.ValidationMessageFor(model => model.Telefone2, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Endereco.Logradouro, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Logradouro, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Logradouro, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.Bairro, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Bairro, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Bairro, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.Cidade, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.Cidade, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.Cidade, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Endereco.UF, htmlAttributes: new { @class = "control-label" })
+                    <select id="Endereco.UF" name="Endereco.UF" class="form-control input-group-sm">
+                            <option value="AC" @if (Model.Endereco.UF == "AC")
+                                {
+                                    @:selected
+                                } >AC</option>
+                            <option value="AL" @if (Model.Endereco.UF == "AL")
+                                {
+                                    @:selected
+                                } >AL</option>
+                            <option value="AM" @if (Model.Endereco.UF == "AM")
+                                {
+                                    @:selected
+                                } >AM</option>
+                            <option value="AP" @if (Model.Endereco.UF == "AP")
+                                {
+                                    @:selected
+                                } >AP</option>
+                            <option value="BA" @if (Model.Endereco.UF == "BA")
+                                {
+                                    @:selected
+                                } >BA</option>
+                            <option value="CE" @if (Model.Endereco.UF == "CE")
+                                {
+                                    @:selected
+                                } >CE</option>
+                            <option value="DF" @if (Model.Endereco.UF == "DF")
+                                {
+                                    @:selected
+                                } >DF</option>
+                            <option value="ES" @if (Model.Endereco.UF == "ES")
+                                {
+                                    @:selected
+                                } >ES</option>
+                            <option value="GO" @if (Model.Endereco.UF == "GO")
+                                {
+                                    @:selected
+                                } >GO</option>
+                            <option value="MA" @if (Model.Endereco.UF == "MA")
+                                {
+                                    @:selected
+                                } >MA</option>
+                            <option value="MG" @if (Model.Endereco.UF == "MG")
+                                {
+                                    @:selected
+                                } >MG</option>
+                            <option value="MS" @if (Model.Endereco.UF == "MS")
+                                {
+                                    @:selected
+                                } >MS</option>
+                            <option value="MT" @if (Model.Endereco.UF == "MT")
+                                {
+                                    @:selected
+                                } >MT</option>
+                            <option value="PA" @if (Model.Endereco.UF == "PA")
+                                {
+                                    @:selected
+                                } >PA</option>
+                            <option value="PB" @if (Model.Endereco.UF == "PB")
+                                {
+                                    @:selected
+                                } >PB</option>
+                            <option value="PE" @if (Model.Endereco.UF == "PE")
+                                {
+                                    @:selected
+                                } >PE</option>
+                            <option value="PI" @if (Model.Endereco.UF == "PI")
+                                {
+                                    @:selected
+                                } >PI</option>
+                            <option value="PR" @if (Model.Endereco.UF == "PR")
+                                {
+                                    @:selected
+                                } >PR</option>
+                            <option value="RJ" @if (Model.Endereco.UF == "RJ")
+                                {
+                                    @:selected
+                                } >RJ</option>
+                            <option value="RN" @if (Model.Endereco.UF == "RN")
+                                {
+                                    @:selected
+                                } >RN</option>
+                            <option value="RO" @if (Model.Endereco.UF == "RO")
+                                {
+                                    @:selected
+                                } >RO</option>
+                            <option value="RR" @if (Model.Endereco.UF == "RR")
+                                {
+                                    @:selected
+                                } >RR</option>
+                            <option value="RS" @if (Model.Endereco.UF == "RS")
+                                {
+                                    @:selected
+                                } >RS</option>
+                            <option value="SC" @if (Model.Endereco.UF == "SC")
+                                {
+                                    @:selected
+                                } >SC</option>
+                            <option value="SE" @if (Model.Endereco.UF == "SE")
+                                {
+                                    @:selected
+                                } >SE</option>
+                            <option value="SP" @if (Model.Endereco.UF == "SP")
+                                {
+                                    @:selected
+                                } >SP</option>
+                            <option value="TO" @if (Model.Endereco.UF == "TO")
+                                {
+                                    @:selected
+                                } >TO</option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Endereco.UF, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Endereco.CEP, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Endereco.CEP, new { htmlAttributes = new { @class = "form-control cep" } })
+                    @Html.ValidationMessageFor(model => model.Endereco.CEP, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.Ramo_Atividade, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.Ramo_Atividade, 5, 100, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Ramo_Atividade, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.HiddenFor(model => Model.Logo)
+                    @Html.HiddenFor(model => Model.Nome_Arquivo)
+                    <input type="text" class="form-control" readonly>
+                </div>
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <span class="btn btn-default btn-file" style="padding:0px">
+                                <button class="btn btn-default">Carregar Logo...</button>
+                                @Html.TextBoxFor(model => model.wLogo, new { type = "file", accept = "image/*" })
+                                @Html.ValidationMessageFor(model => model.wLogo, "", new { @class = "text-danger" })
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Salvar" class="btn btn-success btn-sm" />
+                    @if (Model.IdEmpresas > 0)
+                    {
+                        <button class="btn btn-sm btn-danger" type="button" onclick="MensagemConfirma('Atenção','Deseja excluir o registro?','@Url.Action("Excluir","Empresas",new { id = @Model.IdEmpresas })')">Excluir</button>
+                    }
+                    <a href="@Url.Action("EmpresasList","Empresas")" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    if ($("#img").attr("src") != "../../Images/logo_0.") {
+        $("#wLogo").removeAttr("data-val");
+        $("#wLogo").removeAttr("data-val-required");
+    }
+</script>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/mascaras")
+}

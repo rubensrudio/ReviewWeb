@@ -1,0 +1,7 @@
+﻿@model PagedList.IPagedList<Modelo.ModeloCliente>
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+<h2>ListagemClientes</h2>
+
+@Html.Partial("_ListagemClientes", Model)

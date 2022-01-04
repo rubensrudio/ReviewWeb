@@ -1,0 +1,83 @@
+﻿@model System.Data.DataTable
+@using System.Data;
+
+<div id="divLista">
+    <table id="mytable" class="table table-bordered table-striped">
+        <tr>
+            <th><input type="checkbox" id="checkall" /></th>
+            <th>Código</th>
+            <th>Dt. Programação</th>
+            <th>Contrato</th>
+            <th>Funcionário</th>
+            <th>Tipo</th>
+            <th>Qt. Horas</th>
+            <th>Liberado</th>
+            <th>Liberar</th>
+            <th>Excluir</th>
+        </tr>
+        @{ int i = 0; }
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                <td> @if(Convert.ToInt32(row["liberado"]) == 0){ <input type="checkbox" name="checkProgHorasExtras[]" value="@row["idprog_horas_extras"]" class="checkthis" /> } </td>
+                <td style="text-align:center">@row["idprog_horas_extras"]</td>
+                <td>@row["dt_prog"]</td>
+                <td>@row["contrato"] @row["descricao"]</td>
+                <td>@row["nome"] @row["sobrenome"]</td>
+                <td>@row["tipo"]</td>
+                <td>@row["quant_horas"]</td>
+                <td>@if(Convert.ToInt32(row["liberado"]) == 0){ <span>Não</span> } else{ <span>Sim</span> } </td>
+                <td>
+                    <div style="float:left;text-align:center;width:100%">
+                        @if((Convert.ToInt32(row["liberado"]) == 0) && (ViewBag.Todos == 1)){
+                        <button title="Liberar" class="btn btn-sm btn-outline-secondary" type="button" onclick="MensagemConfirma('Atenção','Tem certeza que deseja liberar o registro?','@Url.Action("Liberar", "ProgHorasExtras", new { id = row["idprog_horas_extras"] })')"><img src="../Images/svg/si-glyph-pencil.svg" style="width:16px;height:16px" /></button>
+                        }
+                    </div>
+                </td>
+                <td>
+                    <div style="float:left;text-align:center;width:100%">
+                        @if(Convert.ToInt32(row["liberado"]) == 0){
+                        <button title="Excluir" class="btn btn-sm btn-outline-secondary" type="button" onclick="MensagemConfirma('Atenção','Tem certeza que deseja apagar o registro?','@Url.Action("Excluir", "ProgHorasExtras", new { id = row["idprog_horas_extras"] })')"><img src="../Images/svg/si-glyph-trash.svg" style="width:16px;height:16px" /></button>
+                        }
+                    </div>
+                </td>
+            </tr>
+            i = i + 1;
+        }
+
+    </table>
+    <div style="text-align:center">
+        @if (ViewBag.PageNum > 1)
+        {
+            @Ajax.ActionLink("<<", "ProgHorasExtrasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=1&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+            @Html.Raw(" ")
+            @Ajax.ActionLink("<", "ProgHorasExtrasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageAnt + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+        }
+        else
+        {
+            <button class="btn btn-sm btn-secondary" type="button" disabled><<</button>
+            @Html.Raw(" ")
+            <button class="btn btn-sm btn-secondary" type="button" disabled><</button>
+        }
+
+
+        @Html.Raw(" ")
+        @ViewBag.PageNum
+        @Html.Raw(" de ")
+        @ViewBag.PageUlt
+        @Html.Raw(" ")
+
+        @if (ViewBag.PageNum < ViewBag.PageUlt)
+        {
+            @Ajax.ActionLink(">", "ProgHorasExtrasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageProx + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+            @Html.Raw(" ")
+            @Ajax.ActionLink(">>", "ProgHorasExtrasList", "", new AjaxOptions { HttpMethod = "Get", InsertionMode = InsertionMode.Replace, UpdateTargetId = "divLista" }, new { onclick = "this.href = '?pagina=" + ViewBag.PageUlt + "&registros=" + ViewBag.RowsPage + "&buscapor=' + document.getElementById('buscapor').value + '&ordenapor=' + document.getElementById('ordenapor').value + '&valor=' + document.getElementById('valor').value;", @class = "btn btn-secondary btn-sm" })
+        }
+        else
+        {
+            <button class="btn btn-sm btn-secondary" type="button" disabled>></button>
+            @Html.Raw(" ")
+            <button class="btn btn-sm btn-secondary" type="button" disabled>>></button>
+        }
+    </div>
+</div>

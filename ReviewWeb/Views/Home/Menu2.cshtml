@@ -1,0 +1,56 @@
+﻿
+<nav class="navbar navbar-dark bg-dark" style="padding:0px">
+    <div class="div-menu">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                @Html.ActionLink("Home", "Index", "", new { @class = "nav-link" })
+            </li>
+            <li>
+                <a href="#pageSubmenu_01" data-toggle="collapse" aria-expanded="false" class="nav-link dropdown-toggle" style="padding-left:15px">Geral</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu_01">
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Clientes</a>
+                    </li>
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Fornecedores</a>
+                    </li> 
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Usuários</a>
+                    </li> 
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Centros de Custo</a>
+                    </li>                
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu_02" data-toggle="collapse" aria-expanded="false" class="nav-link dropdown-toggle" style="padding-left:15px">Orçamentos</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu_02">
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Propostas</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu_03" data-toggle="collapse" aria-expanded="false" class="nav-link dropdown-toggle" style="padding-left:15px">Suprimentos</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu_03">
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Classificação</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#pageSubmenu_04" data-toggle="collapse" aria-expanded="false" class="nav-link dropdown-toggle" style="padding-left:15px">Financeiro</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu_04">
+                    <li class="nav-subitem">
+                        <a href="#" class="nav-link">Plano de Contas</a>
+                    </li>
+                </ul>
+            </li>
+                
+            <li class="nav-item">
+                @Html.ActionLink("Sobre", "About", "", new { @class = "nav-link" })
+            </li>
+
+        </ul>
+    </div>
+</nav> 
